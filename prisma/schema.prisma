@@ -10,4 +10,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Account {
+  id       String   @id @default(uuid())
+  email    String   @unique // <-- add unique attribute
+  password String
+  fullname String
+  contact  Contact?
+}
 
+model Contact {
+  id         String  @id @default(uuid())
+  account    Account @relation(fields: [id_account], references: [id])
+  id_account String @unique
+}

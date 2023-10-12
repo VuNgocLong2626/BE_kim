@@ -13,13 +13,6 @@ export class loginDTO extends baseDTO {
     @IsNotEmpty()
     @Length(8)
     password: string;
-
-    // static plainToClass<T>(this: new (...args: any[]) => T, obj: T): T {
-    //     return plainToInstance(this, obj, {
-    //         excludeExtraneousValues: true
-    //     })
-        
-    // }
 }
 
 
@@ -33,4 +26,36 @@ export class loginResDTO {
     @IsNotEmpty()
     @Length(8)
     password: string;
+}
+
+export class registerDTO extends baseDTO {
+
+    @IsEmail()
+    @IsNotEmpty()
+    @Expose()
+    email: string;
+
+    @IsString()
+    @IsNotEmpty()
+    @Length(8)
+    password: string;
+
+    @IsString()
+    @IsNotEmpty()
+    @Expose({ name: "fullname" })
+    @Length(4)
+    fullname: string;
+}
+
+export class payloadJWT extends baseDTO {
+
+    @IsEmail()
+    @IsNotEmpty()
+    @Expose()
+    email: string;
+
+    @IsString()
+    @IsNotEmpty()
+    @Expose()
+    id: string;
 }

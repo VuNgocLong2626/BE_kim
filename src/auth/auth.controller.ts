@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Post, Res, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post, Res, Req, HttpCode } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { loginDTO } from './dto';
+import { loginDTO, registerDTO } from '../dto';
 import { Response, Request } from 'express';
 
 @Controller('auth')
@@ -13,19 +13,31 @@ export class AuthController {
   }
 
   @Post('/login')
+  @HttpCode(200)
   async login(
     @Body() login: loginDTO,
     @Res({ passthrough: true }) response: Response,
   ): Promise<loginDTO> {
-    // response.cookie('access-token', 'asdasd', { httpOnly: true });
-    const k =loginDTO.plainToClass(login);
-    console.log(k.email);
     return loginDTO.plainToClass(await this.authService.login(login, response));
   }
 
   @Post('/register')
-  async register(@Req() request: Request) {
-    console.log(request.cookies['access-token']);
-    return this.authService.register();
+  @HttpCode(201)
+  async register(
+    @Body() register: registerDTO,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<registerDTO> {
+    return registerDTO.plainToClass(await this.authService.register(register, response));
+  }
+
+  @Get('/logout')
+  @HttpCode(200)
+  async logout(
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<any> {
+    await this.authService.logout(response);
+    return {
+      message: 'Logout an user'
+    };
   }
 }
