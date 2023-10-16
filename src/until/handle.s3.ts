@@ -1,12 +1,16 @@
 import { S3 } from 'aws-sdk';
 import { Logger, Injectable } from '@nestjs/common';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class S3Service {
-    async upload(file) {
+    async upload(file): Promise<string> {
         const { originalname } = file; //originalname: '138591.png',
+        const fileName = originalname.toString().split('.');
+        fileName[0] = uuid();
         const bucketS3 = 'retaurant';
-        await this.uploadS3(file.buffer, bucketS3, originalname);
+        await this.uploadS3(file.buffer, bucketS3, fileName.join('.'));
+        return fileName.join('.')
     }
 
     async uploadS3(file, bucket, name) {

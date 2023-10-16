@@ -3,6 +3,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { CategoryModule } from './category/category.module';
 
 
 @Module({
@@ -16,6 +17,7 @@ import { JwtModule } from '@nestjs/jwt';
       global: true,
       secret: process.env.SECRET_KEY || 'secret'
     }),
+    CategoryModule,
   ],
 })
 export class AppModule {}
