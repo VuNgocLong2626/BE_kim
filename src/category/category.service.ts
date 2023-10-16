@@ -1,12 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import {
   categoryCreateDTO,
   categoryDTO,
   categoryUpdateDTO,
 } from 'src/dto/category.dto';
-import { PrismaService } from 'src/until';
-import { S3Service } from 'src/until/handle.s3';
+import { PrismaService, S3Service } from 'src/until';
 
 @Injectable()
 export class CategoryService {
@@ -19,6 +18,17 @@ export class CategoryService {
     files: Express.Multer.File,
     data: categoryCreateDTO,
   ): Promise<categoryDTO> {
+    const findCategory = await this.prisma.category.findFirst({
+      where: {
+        name: data.name,
+      },
+    });
+    if (findCategory) {
+      throw new HttpException(
+        { message: 'Category already exists' },
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
     const fileName = await this.S3Service.upload(files);
     const dataCategory = await this.prisma.category.create({
       data: {

@@ -38,6 +38,7 @@ model Meal {
 
   name        String
   best_seller Boolean @default(false)
+  price       Int
 
   image Image[]
 }
@@ -49,7 +50,6 @@ model Image {
   id_meal String
   url     String
 }
-
 
 // #npx prisma migrate dev --name init
 // #npx prisma generator
