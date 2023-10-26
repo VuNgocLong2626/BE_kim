@@ -1,5 +1,5 @@
 import { HttpException, Injectable, Res, HttpStatus } from '@nestjs/common';
-import { loginDTO, payloadJWT, registerDTO } from '../dto';
+import { loginDTO, loginJWT, payloadJWT, registerDTO } from '../dto';
 import { JwtService } from '@nestjs/jwt';
 import { Response, Request } from 'express';
 import { PrismaService } from 'src/until';
@@ -29,7 +29,9 @@ export class AuthService {
       );
     }
 
-    const hashPassword = await this.jwthandler.hashPassword(registerDTO.password);
+    const hashPassword = await this.jwthandler.hashPassword(
+      registerDTO.password,
+    );
     const account = await this.prisma.account.create({
       data: {
         ...registerDTO,
@@ -48,7 +50,7 @@ export class AuthService {
   async login(
     loginDTO: loginDTO,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<any> {
+  ): Promise<loginJWT> {
     // kiem tra email
     const user = await this.prisma.account.findUnique({
       where: {
@@ -75,14 +77,17 @@ export class AuthService {
     }
     // tao token va luu cookie
     const payload: payloadJWT = payloadJWT.plainToClass(user);
-    const _ = await this.jwthandler.createToken(payload, response);
+    const token = await this.jwthandler.createToken(payload, response);
 
-    return user;
+    const res = {
+      ...user,
+      token,
+    };
+
+    return loginJWT.plainToClass(res);
   }
 
-  async logout(
-    @Res({ passthrough: true }) response: Response,
-  ): Promise<void> {
+  async logout(@Res({ passthrough: true }) response: Response): Promise<void> {
     response.clearCookie('access-token');
   }
 }

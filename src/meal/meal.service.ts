@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { mealDTO, mealResDTO } from 'src/dto';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { mealDTO, mealDeleteDTO, mealResDTO } from 'src/dto';
 import { PrismaService, S3Service } from 'src/until';
 
 export interface meal {
@@ -63,5 +63,45 @@ export class MealService {
     );
 
     return res;
+  }
+
+  async deleteMeal(data: mealDeleteDTO) {
+    //check id category
+    const meal = await this.prisma.meal.findFirst({
+      where: {
+        id: data.id,
+      },
+    });
+
+    if (!meal) {
+      throw new HttpException(
+        { message: 'Meal not found' },
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+    // find image
+    const imageAll = await this.prisma.image.findMany({
+      where: {
+        id_meal: data.id,
+      },
+    });
+    // delete image from s3 and database
+    imageAll.map(async (element) => {
+      Promise.all([
+        this.S3Service.deleteFileS3(element.url),
+        this.prisma.image.deleteMany({
+          where: {
+            id: element.id,
+          },
+        }),
+      ]);
+    });
+
+    const mealDelete = await this.prisma.meal.delete({
+      where: {
+        id: data.id,
+      },
+    });
+    return mealDelete;
   }
 }

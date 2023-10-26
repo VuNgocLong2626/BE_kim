@@ -48,3 +48,10 @@ export class mealResDTO extends baseDTO {
   @Expose()
   url: string[];
 }
+
+export class mealDeleteDTO extends baseDTO {
+  @IsString()
+  @IsNotEmpty()
+  @Expose()
+  id: string;
+}

@@ -9,12 +9,15 @@ import {
   ParseFilePipeBuilder,
   HttpStatus,
   Put,
+  Delete,
+  Param,
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import {
   categoryCreateDTO,
   categoryDTO,
   categoryUpdateDTO,
+  categorydeleteDTO,
 } from 'src/dto/category.dto';
 import { CategoryService } from './category.service';
 
@@ -65,5 +68,10 @@ export class CategoryController {
   @Get('get-all')
   async getAllCategory() {
     return this.categoryService.getAllCategory();
+  }
+
+  @Delete('delete/:id')
+  async deleteCategory(@Param('id') id: string) {
+    return this.categoryService.deleteAllCategory(id);
   }
 }

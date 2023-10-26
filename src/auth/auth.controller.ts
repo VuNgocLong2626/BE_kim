@@ -1,6 +1,14 @@
-import { Body, Controller, Get, Post, Res, Req, HttpCode } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Res,
+  Req,
+  HttpCode,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { loginDTO, registerDTO } from '../dto';
+import { loginDTO, loginJWT, registerDTO } from '../dto';
 import { Response, Request } from 'express';
 
 @Controller('auth')
@@ -17,8 +25,9 @@ export class AuthController {
   async login(
     @Body() login: loginDTO,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<loginDTO> {
-    return loginDTO.plainToClass(await this.authService.login(login, response));
+  ): Promise<loginJWT> {
+    console.log('----------------');
+    return loginJWT.plainToClass(await this.authService.login(login, response));
   }
 
   @Post('/register')
@@ -27,17 +36,17 @@ export class AuthController {
     @Body() register: registerDTO,
     @Res({ passthrough: true }) response: Response,
   ): Promise<registerDTO> {
-    return registerDTO.plainToClass(await this.authService.register(register, response));
+    return registerDTO.plainToClass(
+      await this.authService.register(register, response),
+    );
   }
 
   @Get('/logout')
   @HttpCode(200)
-  async logout(
-    @Res({ passthrough: true }) response: Response,
-  ): Promise<any> {
+  async logout(@Res({ passthrough: true }) response: Response): Promise<any> {
     await this.authService.logout(response);
     return {
-      message: 'Logout an user'
+      message: 'Logout an user',
     };
   }
 }

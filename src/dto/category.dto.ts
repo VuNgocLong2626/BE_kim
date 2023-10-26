@@ -32,6 +32,12 @@ export class categoryUpdateDTO extends baseDTO {
   id: string;
 }
 
+export class categorydeleteDTO extends baseDTO {
+  @IsNotEmpty()
+  @Expose()
+  id: string;
+}
+
 // export class categorysDTO extends baseDTO {
 //   @Type(() => categoryDTO)
 //   categorys: categoryDTO[];

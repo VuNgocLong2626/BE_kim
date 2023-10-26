@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
+  Param,
   ParseFilePipeBuilder,
   Post,
   Put,
@@ -10,7 +12,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { mealDTO } from 'src/dto';
+import { mealDTO, mealDeleteDTO } from 'src/dto';
 import { MealService } from './meal.service';
 
 @Controller('meal')
@@ -57,4 +59,9 @@ export class MealController {
     files: Array<Express.Multer.File>,
     @Body() data: mealDTO,
   ) {}
+
+  @Delete('delete')
+  async deleteCategory(@Param('id') id: string) {
+    return this.mealService.deleteMeal({ id });
+  }
 }
