@@ -64,5 +64,10 @@ export class loginJWT extends baseDTO {
   @IsString()
   @IsNotEmpty()
   @Expose()
+  id: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @Expose()
   token: string;
 }

@@ -12,7 +12,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { mealDTO, mealDeleteDTO } from 'src/dto';
+import { mealDTO, mealDeleteDTO, mealUpdateSellerDTO } from 'src/dto';
 import { MealService } from './meal.service';
 
 @Controller('meal')
@@ -22,6 +22,11 @@ export class MealController {
   @Get('get-all')
   async getAll() {
     return this.mealService.getAllMeal();
+  }
+
+  @Get('get-all-seller')
+  async getAllSeller() {
+    return this.mealService.getAllSeller();
   }
 
   @Post('create')
@@ -60,8 +65,13 @@ export class MealController {
     @Body() data: mealDTO,
   ) {}
 
-  @Delete('delete')
+  @Delete('delete/:id')
   async deleteCategory(@Param('id') id: string) {
     return this.mealService.deleteMeal({ id });
+  }
+
+  @Put('update-seller')
+  async updateSeller(@Body() data: mealUpdateSellerDTO) {
+    return this.mealService.updateSeller(data);
   }
 }

@@ -14,6 +14,9 @@ export class CategoryModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(LoggerMiddleware)
-      .forRoutes({ path: '/category/create', method: RequestMethod.POST });
+      .forRoutes(
+        { path: '/category/create', method: RequestMethod.POST },
+        { path: '/category/update-all', method: RequestMethod.PUT },
+      );
   }
 }

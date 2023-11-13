@@ -6,6 +6,7 @@ import {
   Length,
   IsArray,
   IsNumber,
+  IsBoolean,
 } from 'class-validator';
 import { baseDTO } from './base';
 
@@ -20,11 +21,10 @@ export class mealDTO extends baseDTO {
   @Expose()
   name: string;
 
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
   @Expose()
-  @Type(() => Number)
-  price: number;
+  price: string;
 }
 
 export class mealResDTO extends baseDTO {
@@ -54,4 +54,16 @@ export class mealDeleteDTO extends baseDTO {
   @IsNotEmpty()
   @Expose()
   id: string;
+}
+
+export class mealUpdateSellerDTO extends baseDTO {
+  @IsString()
+  @IsNotEmpty()
+  @Expose()
+  id: string;
+
+  @IsBoolean()
+  @IsNotEmpty()
+  @Expose()
+  best_seller: boolean;
 }

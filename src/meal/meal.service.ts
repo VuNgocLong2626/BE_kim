@@ -1,5 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { mealDTO, mealDeleteDTO, mealResDTO } from 'src/dto';
+import {
+  mealDTO,
+  mealDeleteDTO,
+  mealResDTO,
+  mealUpdateSellerDTO,
+} from 'src/dto';
 import { PrismaService, S3Service } from 'src/until';
 
 export interface meal {
@@ -22,7 +27,7 @@ export class MealService {
       data: {
         name: data.name,
         id_category: data.id_category,
-        price: data.price,
+        price: parseInt(data.price.toString()),
       },
     });
 
@@ -52,6 +57,11 @@ export class MealService {
           where: {
             id_meal: element.id,
           },
+          // orderBy: [
+          //   {
+          //     id: 'asc',
+          //   },
+          // ],
         });
         const result = image.map((element) => {
           return this.S3Service.getLinkMediaKey(element.url);
@@ -79,23 +89,6 @@ export class MealService {
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
-    // find image
-    const imageAll = await this.prisma.image.findMany({
-      where: {
-        id_meal: data.id,
-      },
-    });
-    // delete image from s3 and database
-    imageAll.map(async (element) => {
-      Promise.all([
-        this.S3Service.deleteFileS3(element.url),
-        this.prisma.image.deleteMany({
-          where: {
-            id: element.id,
-          },
-        }),
-      ]);
-    });
 
     const mealDelete = await this.prisma.meal.delete({
       where: {
@@ -103,5 +96,55 @@ export class MealService {
       },
     });
     return mealDelete;
+  }
+
+  async updateSeller(data: mealUpdateSellerDTO) {
+    const meal = await this.prisma.meal.findFirst({
+      where: {
+        id: data.id,
+      },
+    });
+
+    if (!meal) {
+      throw new HttpException(
+        { message: 'Meal not found' },
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+
+    return this.prisma.meal.update({
+      where: {
+        id: data.id,
+      },
+      data: {
+        best_seller: data.best_seller,
+      },
+    });
+  }
+
+  async getAllSeller(): Promise<mealResDTO[]> {
+    const dataMeal = await this.prisma.meal.findMany({
+      where: {
+        best_seller: true,
+      },
+    });
+
+    const res = await Promise.all(
+      dataMeal.map(async (element) => {
+        const image = await this.prisma.image.findMany({
+          where: {
+            id_meal: element.id,
+          },
+        });
+        const result = image.map((element) => {
+          return this.S3Service.getLinkMediaKey(element.url);
+        });
+
+        const res = { ...element, url: await Promise.all(result) };
+        return res;
+      }),
+    );
+
+    return res;
   }
 }

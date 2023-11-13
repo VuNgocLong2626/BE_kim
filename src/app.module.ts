@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { CategoryModule } from './category/category.module';
 import { MealModule } from './meal/meal.module';
+import { AboutModule } from './about/about.module';
 
 
 @Module({
@@ -20,6 +21,7 @@ import { MealModule } from './meal/meal.module';
     }),
     CategoryModule,
     MealModule,
+    AboutModule,
   ],
 })
 export class AppModule {}
